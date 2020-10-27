@@ -11,7 +11,7 @@ import argparse
 import imutils
 import dlib
 import cv2
-from flask import Flask, render_template, Response
+from flask import Flask, render_template, Response, jsonify
 import numpy as np
 import time
 import threading
@@ -20,43 +20,47 @@ import time
 '''
 ###############################################################################
 '''
+
+
 def euclidean_dist(ptA, ptB):
-    	# compute and return the euclidean distance between the two
-	# points
-	return np.linalg.norm(ptA - ptB)
+    # compute and return the euclidean distance between the two
+    # points
+    return np.linalg.norm(ptA - ptB)
+
 
 def eye_aspect_ratio(eye):
-	# compute the euclidean distances between the two sets of
-	# vertical eye landmarks (x, y)-coordinates
-	A = euclidean_dist(eye[1], eye[5])
-	B = euclidean_dist(eye[2], eye[4])
+    # compute the euclidean distances between the two sets of
+    # vertical eye landmarks (x, y)-coordinates
+    A = euclidean_dist(eye[1], eye[5])
+    B = euclidean_dist(eye[2], eye[4])
 
-	# compute the euclidean distance between the horizontal
-	# eye landmark (x, y)-coordinates
-	C = euclidean_dist(eye[0], eye[3])
+    # compute the euclidean distance between the horizontal
+    # eye landmark (x, y)-coordinates
+    C = euclidean_dist(eye[0], eye[3])
 
-	# compute the eye aspect ratio
-	ear = (A + B) / (2.0 * C)
+    # compute the eye aspect ratio
+    ear = (A + B) / (2.0 * C)
 
-	# return the eye aspect ratio
-	return ear
- 
+    # return the eye aspect ratio
+    return ear
+
+
 # construct the argument parse and parse the arguments
 ap = argparse.ArgumentParser()
 ap.add_argument("-c", "--cascade", required=True,
-	help = "path to where the face cascade resides")
+                help="path to where the face cascade resides")
 ap.add_argument("-p", "--shape-predictor", required=True,
-	help="path to facial landmark predictor")
+                help="path to facial landmark predictor")
 ap.add_argument("-a", "--alarm", type=int, default=0,
-	help="boolean used to indicate if TraffHat should be used")
+                help="boolean used to indicate if TraffHat should be used")
 args = vars(ap.parse_args())
 
 # check to see if we are using GPIO/TrafficHat as an alarm
 if args["alarm"] > 0:
-	from gpiozero import TrafficHat
-	th = TrafficHat()
-	print("[INFO] using TrafficHat alarm...")
- 
+    from gpiozero import TrafficHat
+    th = TrafficHat()
+    print("[INFO] using TrafficHat alarm...")
+
 # define two constants, one for the eye aspect ratio to indicate
 # blink and then a second constant for the number of consecutive
 # frames the eye must be below the threshold for to set off the
@@ -94,17 +98,21 @@ print("[INFO] starting video stream thread...")
 # 1. USB웹 캠이 아닌 picamera이면 2번을 꼭 수행
 # 2. https://webnautes.tistory.com/1192 참고하여 /etc/modules 수정하여 /dev/video0 장치로 인식
 # 카메라 장치 연결, debug 모드에선 동작X, 프레임 크기 축소
-vs = VideoStream(src=0).start() # 0(for USB) or -1(for picamera)
+vs = VideoStream(src=0).start()  # 0(for USB) or -1(for picamera)
 # vs = VideoStream(usePiCamera=True).start()
 time.sleep(1.0)
 
+# global variable for checking toggle-onoff, is_sleep
 outputFrame = None
 active = False
+is_sleep = False
 lock = threading.Lock()
 
 # loop over frames from the video stream
+
+
 def sleep_detect():
-    global outputFrame, lock, COUNTER, active
+    global outputFrame, lock, COUNTER, active, is_sleep
 
     while True:
         # grab the frame from the threaded video file stream, resize
@@ -115,16 +123,16 @@ def sleep_detect():
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
         # detect faces in the grayscale frame
-        rects = detector.detectMultiScale(gray, scaleFactor=1.1, 
-            minNeighbors=5, minSize=(30, 30),
-            flags=cv2.CASCADE_SCALE_IMAGE)
+        rects = detector.detectMultiScale(gray, scaleFactor=1.1,
+                                          minNeighbors=5, minSize=(30, 30),
+                                          flags=cv2.CASCADE_SCALE_IMAGE)
 
         # loop over the face detections
         for (x, y, w, h) in rects:
             # construct a dlib rectangle object from the Haar cascade
             # bounding box
             rect = dlib.rectangle(int(x), int(y), int(x + w),
-                int(y + h))
+                                  int(y + h))
 
             # determine the facial landmarks for the face region, then
             # convert the facial landmark (x, y)-coordinates to a NumPy
@@ -165,30 +173,32 @@ def sleep_detect():
                         # be sounded
                         if args["alarm"] > 0 and active == True:
                             th.buzzer.blink(0.1, 0.1, 10,
-                                background=True)
-
+                                            background=True)
+                    # is_sleep on
+                    is_sleep = True
                     # draw an alarm on the frame
                     cv2.putText(frame, "DROWSINESS ALERT!", (10, 30),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
 
             # otherwise, the eye aspect ratio is not below the blink
             # threshold, so reset the counter and alarm
             else:
                 COUNTER = 0
                 ALARM_ON = False
+                is_sleep = False
 
             # draw the computed eye aspect ratio on the frame to help
             # with debugging and setting the correct eye aspect ratio
             # thresholds and frame counters
             cv2.putText(frame, "EAR: {:.3f}".format(ear), (300, 30),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-    
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+
         # acquire the lock, set the output frame, and release the lock
         with lock:
             outputFrame = frame.copy()
     # while end
-    
-#def sleep_detect(): end
+
+# def sleep_detect(): end
 
 
 '''
@@ -196,7 +206,7 @@ def sleep_detect():
 '''
 
 # flask 웹서버
-app = Flask(__name__) 
+app = Flask(__name__)
 
 
 # gen():
@@ -205,54 +215,70 @@ app = Flask(__name__)
 # 해당 URL로 접속 시 "http://ip주소:port(5000)/video_feed") 카메라 데이터를 볼 수 있다.
 def gen():
     # grab global references to the output frame and lock variables
-	global outputFrame, lock
+    global outputFrame, lock
 
     # loop over frames from the output stream
-	while True:
-		# wait until the lock is acquired
-		with lock:
-			# check if the output frame is available, otherwise skip
-			# the iteration of the loop
-			if outputFrame is None:
-				continue
+    while True:
+        # wait until the lock is acquired
+        with lock:
+            # check if the output frame is available, otherwise skip
+            # the iteration of the loop
+            if outputFrame is None:
+                continue
 
-			# encode the frame in JPEG format
-			(flag, encodedImage) = cv2.imencode(".jpg", outputFrame)
+            # encode the frame in JPEG format
+            (flag, encodedImage) = cv2.imencode(".jpg", outputFrame)
 
-			# ensure the frame was successfully encoded
-			if not flag:
-				continue
+            # ensure the frame was successfully encoded
+            if not flag:
+                continue
 
-		# yield the output frame in the byte format
-		yield(b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + 
-			bytearray(encodedImage) + b'\r\n')
+        # yield the output frame in the byte format
+        yield(b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' +
+              bytearray(encodedImage) + b'\r\n')
 # def gen(): end
 
 
 @app.route("/video_feed")
 def video_feed():
-	# return the response generated along with the specific media
-	# type (mime type)
-	return Response(gen(),
-		mimetype = "multipart/x-mixed-replace; boundary=frame")
+    # return the response generated along with the specific media
+    # type (mime type)
+    return Response(gen(),
+                    mimetype="multipart/x-mixed-replace; boundary=frame")
 
 
 '''
 ###############################################################################
 '''
 # 해당 URL로 접속 시 아래 함수 안 코드 수행 ex)"http://ip주소:port(5000)/index.html")
+
+
 @app.route('/')
 def index():
 
- return render_template('index.html')
+    return render_template('index.html')
+
+# toggle active variable
+
 
 @app.route('/active')
 def activeToggle():
     global active
 
     active = not active
-    
+
     return str(active)
+
+# get data json format
+
+
+@app.route('/data')
+def getData():
+    global is_sleep
+
+    data = {'sleep': is_sleep}
+
+    return jsonify(data)
 
 
 '''
@@ -263,7 +289,7 @@ def activeToggle():
 # : sleep_detect() 서브스레드 시작
 # : flask 웹 서버 시작
 if __name__ == '__main__':
-     # start a thread that will perform trafficlight detect
+    # start a thread that will perform trafficlight detect
     t = threading.Thread(target=sleep_detect)
     t.daemon = True
     try:
@@ -276,7 +302,6 @@ if __name__ == '__main__':
 # release the video stream pointer and program end
 vs.stop()
 print("[INFO] program End")
-
 
 
 '''
