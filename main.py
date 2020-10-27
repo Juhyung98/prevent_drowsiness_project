@@ -1,7 +1,6 @@
-#  sudo pip3 install flask
+#  sudo pip3 install opencv, dlib, flask, imutils
 # USAGE
-# python pi_detect_drowsiness.py --cascade haarcascade_frontalface_default.xml --shape-predictor shape_predictor_68_face_landmarks.dat
-# python pi_detect_drowsiness.py --cascade haarcascade_frontalface_default.xml --shape-predictor shape_predictor_68_face_landmarks.dat --alarm 1
+# python main.py --c haarcascade_frontalface_default.xml -p shape_predictor_68_face_landmarks.dat -a 1
 
 # import the necessary packages
 from imutils.video import VideoStream
@@ -252,11 +251,14 @@ def video_feed():
 '''
 # 해당 URL로 접속 시 아래 함수 안 코드 수행 ex)"http://ip주소:port(5000)/index.html")
 
+# index.html page
+
 
 @app.route('/')
 def index():
 
     return render_template('index.html')
+# def index(): end
 
 # toggle active variable
 
@@ -268,9 +270,10 @@ def activeToggle():
     active = not active
 
     return str(active)
+# def activeToggle(): end
+
 
 # get data json format
-
 
 @app.route('/data')
 def getData():
@@ -279,6 +282,7 @@ def getData():
     data = {'sleep': is_sleep}
 
     return jsonify(data)
+# def getData(): end
 
 
 '''
