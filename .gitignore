@@ -2,3 +2,4 @@ haarcascade_frontalface_default.xml
 pi_detect_drowsiness.py
 flask_cheatsheet.pdf
 shape_predictor_68_face_landmarks.dat
+static/chart

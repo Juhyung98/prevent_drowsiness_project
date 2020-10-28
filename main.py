@@ -16,6 +16,7 @@ import time
 import threading
 import time
 
+
 '''
 ###############################################################################
 '''
@@ -105,13 +106,14 @@ time.sleep(1.0)
 outputFrame = None
 active = False
 is_sleep = False
+sensorValue = 13
 lock = threading.Lock()
 
 # loop over frames from the video stream
 
 
 def sleep_detect():
-    global outputFrame, lock, COUNTER, active, is_sleep
+    global outputFrame, lock, COUNTER, active, isPlaying, is_sleep, ALARM_ON
 
     while True:
         # grab the frame from the threaded video file stream, resize
@@ -173,6 +175,7 @@ def sleep_detect():
                         if args["alarm"] > 0 and active == True:
                             th.buzzer.blink(0.1, 0.1, 10,
                                             background=True)
+                   
                     # is_sleep on
                     is_sleep = True
                     # draw an alarm on the frame
@@ -277,9 +280,12 @@ def activeToggle():
 
 @app.route('/data')
 def getData():
-    global is_sleep
+    global is_sleep, sensorValue
 
-    data = {'sleep': is_sleep}
+    data = {
+        'sleep': is_sleep,
+        'sensor': sensorValue
+        }
 
     return jsonify(data)
 # def getData(): end
