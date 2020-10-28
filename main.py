@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 #  sudo pip3 install opencv, dlib, flask, imutils
 # USAGE
 # python main.py --c haarcascade_frontalface_default.xml -p shape_predictor_68_face_landmarks.dat -a 1
@@ -113,7 +114,7 @@ lock = threading.Lock()
 
 
 def sleep_detect():
-    global outputFrame, lock, COUNTER, active, isPlaying, is_sleep, ALARM_ON
+    global outputFrame, lock, COUNTER, active, is_sleep, ALARM_ON
 
     while True:
         # grab the frame from the threaded video file stream, resize
@@ -175,7 +176,7 @@ def sleep_detect():
                         if args["alarm"] > 0 and active == True:
                             th.buzzer.blink(0.1, 0.1, 10,
                                             background=True)
-                   
+
                     # is_sleep on
                     is_sleep = True
                     # draw an alarm on the frame
@@ -285,7 +286,7 @@ def getData():
     data = {
         'sleep': is_sleep,
         'sensor': sensorValue
-        }
+    }
 
     return jsonify(data)
 # def getData(): end
