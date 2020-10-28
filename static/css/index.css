@@ -1,0 +1,248 @@
+/* 전체 100% */
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    background-color:#ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 내용 담을 공간 전체의 100% */
+.container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+/* warning 창 */
+.warning {
+    position: absolute;
+    width: 50%;
+    height: 35%;
+    border-radius: 1.5em;
+    background-color: #AFAFAF;
+    top: 35%;
+    left: 25%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 7px 6px 32px -1px rgba(128,128,128);
+}
+
+.warning-top {
+    width: 100%;
+    height: 55%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.warning-bottom {
+    width: 100%;
+    height: 45%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.warning-img {
+    width: 30%;
+    height: 80%;
+    background-color: #AFAFAF;
+}
+.warning-text {
+    margin: 0;
+    width: 100%;
+    height: 60%;
+    text-align: center;
+    font-size: 2rem;
+    color: red;
+    font-family: 'Noto Sans KR', sans-serif;
+}
+
+.warning.deactive {
+    display: none;
+}
+
+/* header공간 container에서 10% */
+header {
+    width: 100%;
+    height: 10%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    border-bottom: 1px solid rgb(219,219,219);
+}
+
+div.row0 {
+    width: 80%;
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+p.title-left {
+    width: 30%;
+    height: 50%;
+    font-size: 1.5rem;
+    text-align: center;
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+}
+
+p.title-right {
+    width: 30%;
+    height: 50%;
+    font-size: 1.5rem;
+    text-align: center;
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+}
+
+/* content container에서 80% */
+section.content {
+    width: 100%;
+    height: 80%;
+    background-color: rgb(250,250,250);
+}
+
+main {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+div.toggle-section {
+    width: 78%;
+    height: 20%;
+    margin: 0.5%;
+    display: flex;
+    align-items: center;
+}
+
+div.toggle-wrap {
+    width: 10%;
+    height: 45%;
+}
+
+div.toggle-btn {
+    width: 100%;
+    height: 100%;
+    background-color: gray;
+    border-radius: 3.5em;
+    padding: 5%;
+    transition: all 300ms ease-in-out;
+}
+
+.toggle-btn > .inner-circle {
+    width: 50%;
+    height: 100%;
+    background-color: white;
+    border-radius: 50%;
+    transition: all 300ms ease-in-out;
+}
+
+.toggle-btn.active {
+    background-color: #00acee;
+}
+.toggle-btn.active > .inner-circle {
+    margin-left: 50%;
+}
+
+
+div.row1 {
+    width: 80%;
+    height: 80%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0.05;
+    transition: all 600ms ease-in-out;
+}
+
+.row1.active {
+    opacity: 1.00;
+    transition: all 600ms ease-in-out;
+}
+
+div.left {
+    width: 99%;
+    height: 99%;
+    margin: 1%;
+    display: flex;
+    justify-content: center;
+}
+
+div.right {
+    width: 99%;
+    height: 99%;
+    margin: 1%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.right-top {
+    width: 100%;
+    height: 30%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+.right-button {
+    width: 100%;
+    height: 70%;
+    border: 1px solid gray;
+    border-radius: 1em;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 1.2em;
+}
+
+.right-bottom {
+    width: 100%;
+    height: 70%;
+}
+
+.right-graph {
+    width: 100%;
+    height: 100%;
+}
+
+.chartjs-size-monitor {
+    height: 100%;
+    width: 100%;
+}
+
+.chartjs-render-monitor {
+    height: 100%;
+    width: 100%;
+}
+
+img {
+    width: 100%;
+    height: 100%;
+    /* margin: 4%;
+    padding: 1%; */
+    background-color: rgba(0, 0, 0, 0.315);
+}
+
+/* footer 전체의 10% */
+footer {
+    width: 100%;
+    height: 10%;
+    background-color: rgb(250,250,250);
+}
+
+audio {
+    display: none;
+}
