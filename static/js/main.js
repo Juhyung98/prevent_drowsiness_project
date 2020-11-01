@@ -6,7 +6,7 @@ window.onload = function () {
   var rowDiv = document.querySelector(".row1");
   var obj = {};
   var sleepDetect = false;
-  var sensorValue = [0, 10, 5, 2, 20, 30, 45];
+  var sensorValue = [[0, 0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0, 0]];
   var audio = document.getElementsByTagName('audio')[0];
   var sensorText = document.querySelector('.right-button');
 
@@ -19,12 +19,20 @@ window.onload = function () {
     // The data for our dataset
     data: {
       labels: ['1', '2', '3', '4', '5', '6', '7'],
-      datasets: [{
-        label: '센서 값',
-        backgroundColor: 'rgba(0,0,0,0.00)',
-        borderColor: 'rgb(255, 99, 132)',
-        data: sensorValue
-      }]
+      datasets: [
+        {
+          label: '온도센서 값',
+          backgroundColor: 'rgba(0,0,0,0.00)',
+          borderColor: 'rgb(255, 99, 132)',
+          data: sensorValue[0],
+        },
+        {
+          label: '습도센서 값',
+          backgroundColor: 'rgba(0,0,0,0.00)',
+          borderColor: 'rgb(75, 192, 192)',
+          data: sensorValue[1],
+        }        
+                ] // datasets
     },
 
     // Configuration options go here
@@ -66,9 +74,18 @@ window.onload = function () {
         response.json().then(function (json) {
           obj = json;
           console.log(obj);
-          sensorValue = obj.sensor;
+          sensorValue[0] = obj.sensor1;
+          sensorValue[1] = obj.sensor2;
           // console.log(obj);
-          sensorText.innerHTML = "현재 센서 값 : " + sensorValue;
+          sensorText.innerHTML = "온도 센서 값 : " + sensorValue[0] + " , 습도 센서 값 : " + sensorValue[1];
+
+          //라벨 삭제
+          chart.data.labels.splice(0,1);
+
+          // 데이터 삭제
+          chart.data.datasets.forEach(function(dataset) {
+            dataset.data.splice(0,1);
+          });
 
           //라벨추가
           chart.data.labels.push(chart.data.labels.length.toString())
@@ -77,7 +94,7 @@ window.onload = function () {
           var dataset = chart.data.datasets;
           for (var i = 0; i < dataset.length; i++) {
             //데이터셋의 데이터 추가
-            dataset[i].data.push(sensorValue);
+            dataset[i].data.push(sensorValue[i]);
           }
           chart.update(); //차트 업데이트
 
@@ -106,7 +123,7 @@ window.onload = function () {
     setInterval(function () {
       clock();
       warn();
-    }, 500);
+    }, 1000);
   }
 
   Init();

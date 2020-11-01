@@ -1,6 +1,6 @@
 #  sudo pip3 install opencv, dlib, flask, imutils
 # USAGE
-# python main.py --c haarcascade_frontalface_default.xml -p shape_predictor_68_face_landmarks.dat -a 1
+# python main.py --c haarcascade_frontalface_default.xml -p shape_predictor_68_face_landmarks.dat [-a 1]
 
 # import the necessary packages
 from imutils.video import VideoStream
@@ -106,7 +106,8 @@ time.sleep(1.0)
 outputFrame = None
 active = False
 is_sleep = False
-sensorValue = 13
+sensorValue1 = 13
+sensorValue2 = 15
 lock = threading.Lock()
 
 # loop over frames from the video stream
@@ -280,11 +281,12 @@ def activeToggle():
 
 @app.route('/data')
 def getData():
-    global is_sleep, sensorValue
+    global is_sleep, sensorValue1, sensorValue2
 
     data = {
         'sleep': is_sleep,
-        'sensor': sensorValue
+        'sensor1': sensorValue1,
+        'sensor2': sensorValue2,
         }
 
     return jsonify(data)
