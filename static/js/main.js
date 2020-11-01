@@ -70,6 +70,33 @@ window.onload = function () {
 
   function warn() {
     if (sleepDetect == true) {
+      fetch("http://localhost:5000/sleep").then(function (response) {
+        response.json().then(function (json) {
+          obj = json;
+          console.log(obj);
+
+          //   console.log(obj);
+          if (obj.sleep == true) {
+            // sleeping
+            warnDiv.classList.remove("deactive");
+              audio.play(); 
+            
+          } else {
+            // not sleeping
+            warnDiv.classList.add("deactive");
+            audio.pause();
+          }
+
+        });
+      });
+    } 
+    else {
+      warnDiv.classList.add("deactive");
+    }
+  } // warn
+
+  function graph() {
+    if (sleepDetect == true) {
       fetch("http://localhost:5000/data").then(function (response) {
         response.json().then(function (json) {
           obj = json;
@@ -97,26 +124,13 @@ window.onload = function () {
             dataset[i].data.push(sensorValue[i]);
           }
           chart.update(); //차트 업데이트
-
-          //   console.log(obj);
-          if (obj.sleep == true) {
-            // sleeping
-            warnDiv.classList.remove("deactive");
-              audio.play(); 
-            
-          } else {
-            // not sleeping
-            warnDiv.classList.add("deactive");
-            audio.pause();
-          }
-
         });
       });
     } 
     else {
-      warnDiv.classList.add("deactive");
+
     }
-  } // warn
+  } // graph
 
   function Init() {
     clock();
@@ -124,7 +138,12 @@ window.onload = function () {
       clock();
       warn();
     }, 1000);
-  }
+
+    setInterval(function() {
+      graph();
+    }, 3000);
+
+  } // Init
 
   Init();
 };

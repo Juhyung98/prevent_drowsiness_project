@@ -107,8 +107,8 @@ time.sleep(1.0)
 outputFrame = None
 active = False
 is_sleep = False
-sensorValue1 = 13
-sensorValue2 = 15
+humidity = 13
+temperature = 15
 lock = threading.Lock()
 
 # loop over frames from the video stream
@@ -279,18 +279,36 @@ def activeToggle():
 
 
 # get data json format
+'''
+import Adafruit_DHT
+sensor = Adafruit_DHT.DHT11
+gpio_pin = 4
 
+try:
+    humidity, temperature = Adafruit_DHT.read_retry(sensor, pin)
+except Exception:
+    pass
+'''
 @app.route('/data')
-def getData():
-    global is_sleep, sensorValue1, sensorValue2
+def getSleepData():
+    global humidity, temperature
 
     data = {
-        'sleep': is_sleep,
-        'sensor1': sensorValue1,
-        'sensor2': sensorValue2,
+        'sensor1': temperature,
+        'sensor2': humidity,
         }
 
     return jsonify(data)
+
+@app.route('/sleep')
+def getSensorData():
+    global is_sleep
+
+    data = {
+        'sleep': is_sleep,
+        }
+
+    return jsonify(data)    
 # def getData(): end
 
 
