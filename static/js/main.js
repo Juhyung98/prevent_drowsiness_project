@@ -97,7 +97,8 @@ window.onload = function () {
 
   function graph() {
     if (sleepDetect == true) {
-      fetch("http://localhost:5000/data").then(function (response) {
+      
+      fetch("http://192.168.43.141:5000/data").then(function (response) {
         response.json().then(function (json) {
           obj = json;
           console.log(obj);
@@ -137,7 +138,7 @@ window.onload = function () {
     setInterval(function () {
       clock();
       warn();
-    }, 1000);
+    }, 500);
 
     setInterval(function() {
       graph();
